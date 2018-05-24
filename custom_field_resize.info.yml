@@ -1,0 +1,11 @@
+# Package info
+name: "Custom: Field Resize"
+description: "An example of how to resize field size programmatically."
+type: module
+core: 8.x
+package: Custom
+
+# Dependencies
+dependencies:
+  - field
+  - text
