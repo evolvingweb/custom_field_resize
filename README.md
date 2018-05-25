@@ -112,3 +112,16 @@ to make Drupal detect all our changes.
 
 If you're committing your configuration to git, you'll need to run
 `drush config-export` to update the config in the filesystem and then commit.
+
+## Conclusion
+
+Though we've talked about resizing a _Text (Plain)_ or _varchar_ field in this
+tutorial, we can do the same for any field type which can be safely resized
+using SQL. In certain complex scenarios, it might be necessary to create a
+temporary table with the new data-structure, copy the existing data into that
+table with queries and once all the data has been copied successfully, replace
+the existing the table with the temporary table.
+
+Maybe someday we'll have this resizing feature in Drupal where Drupal will
+intelligently allow us to increase a field's size from it's field UI and only
+deny reduction of field size where there is a possibility of data loss.
