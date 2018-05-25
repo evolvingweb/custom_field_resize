@@ -36,8 +36,7 @@ have the following field on any node type:
 * Length: 64
 
 After you configure the field, create some nodes with some data on the
-_One-liner_ field. We will do the rest of this example with a _varchar_ field
-but you can modify it to match the field you are trying to modify.
+_One-liner_ field.
 
 **Note:** Reducing the length of a field might result in data loss.
 
@@ -57,7 +56,7 @@ function custom_field_resize_update_8001() {
 }
 ``` 
 
-To change the field size, there are three things we will do inside this hook.
+To change the field size, there are four things we will do inside this hook.
 
 ### Resize the Columns
 
@@ -69,9 +68,8 @@ $database->query("ALTER TABLE node__field_one_liner MODIFY field_one_liner_value
 $database->query("ALTER TABLE node_revision__field_one_liner MODIFY field_one_liner_value VARCHAR(255)");
 ```
 
-Here, `$entity_type` is `node` and `$field_name` is `field_one_liner`. You can
-remove the second query if your entity doesn't allow revisions. If revisions
-are disabled then the `node__field_one_liner` table won't exist.
+If revisions are disabled then the `node__field_one_liner` table won't exist.
+So, you can remove the second query if your entity doesn't allow revisions.
 
 ### Update Storage Schema
 
@@ -81,7 +79,7 @@ will think that the database schema needs to be updated because the column
 lengths in the database and will not match the configuration storage. 
 
 ```php
-$storage_key = $entity_type . '.field_schema_data.' . $field_name;
+$storage_key = 'node.field_schema_data.field_one_liner';
 $storage_schema = \Drupal::keyValue('entity.storage_schema.sql');
 $field_schema = $storage_schema->get($storage_key);
 $field_schema['node__field_one_liner']['fields']['field_one_liner_value']['length'] = 255;
@@ -108,10 +106,18 @@ $config->save(TRUE);
 
 Finally, Drupal also stores info about the actively installed configuration and
 schema. To refresh this, we will need to resave the field storage configuration
-to make Drupal detect all our changes. 
+to make Drupal detect all our changes.
 
-If you're committing your configuration to git, you'll need to run
-`drush config-export` to update the config in the filesystem and then commit.
+```php
+// Update field storage configuration.
+FieldStorageConfig::loadByName($entity_type, $field_name)->save();
+```
+
+After this, running `drush updb` or running `update.php` from the admin
+interface should detect your `hook_update_N()` and it should update your field
+size. If you're committing your configuration to git, you'll need to run
+`drush config-export` after running the database updates to update the config
+in the filesystem and then commit it.
 
 ## Conclusion
 
